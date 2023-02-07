@@ -9,10 +9,6 @@ queue_url = "http://localhost:8080/queue.php?config=1"
 user = "Admin"
 password = "zabbix"
 
-# 第1引数にキュー数を取得したいプロキシのホスト名を指定する
-target_proxy = sys.argv[1]
-queue_count = 0
-
 
 def get_cookie(token_url, user, password):
     """[管理>キュー]ページにアクセスするためのcookieを返す"""
@@ -53,8 +49,14 @@ def get_queue_count(target_proxy, html_queue_page, queue_count):
 
 
 if __name__ == "__main__":
+    # 第1引数にキュー数を取得したいプロキシのホスト名を指定する
+    target_proxy = sys.argv[1]
+    queue_count = 0
+
     cookie = get_cookie(token_url=token_url, user=user, password=password)
+
     html_queue_page = get_queue_page(queue_url=queue_url, cookie=cookie)
+
     queue_count = get_queue_count(
         target_proxy=target_proxy,
         html_queue_page=html_queue_page,
