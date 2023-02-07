@@ -9,7 +9,7 @@ queue_url = "http://localhost:8080/queue.php?config=1"
 user = "Admin"
 password = "zabbix"
 
-# 第1引数にキュー数を取りたいプロキシのホスト名を指定する
+# 第1引数にキュー数を取得したいプロキシのホスト名を指定する
 target_proxy = sys.argv[1]
 queue_count = 0
 
