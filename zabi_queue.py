@@ -15,7 +15,7 @@ queue_count = 0
 
 
 def get_cookie(token_url, user, password):
-    """ZabbixGUIにアクセスするためのcookieを返す"""
+    """[管理>キュー]ページにアクセスするためのcookieを返す"""
     data = {
         "jsonrpc": "2.0",
         "method": "user.login",
@@ -37,7 +37,7 @@ def get_queue_page(queue_url, cookie):
 
 
 def get_queue_count(target_proxy, html_queue_page, queue_count):
-    """指定したプロキシの[管理>キュー]ページの合計キュー数を返す"""
+    """[管理>キュー]ページ内の情報から指定したプロキシの合計キュー数を返す"""
     elements = html_queue_page.findall('.//table[@class="list-table"]/tbody/tr/td')
     for num, element in enumerate(elements):
         if target_proxy in element.text:
