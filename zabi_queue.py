@@ -5,36 +5,60 @@ from lxml import html
 
 token_url = "http://localhost:8080/api_jsonrpc.php"
 queue_url = "http://localhost:8080/queue.php?config=1"
-data = {
-    "jsonrpc": "2.0",
-    "method": "user.login",
-    "params": {"user": "Admin", "password": "zabbix"},
-    "id": 1,
-}
 
+user = "Admin"
+password = "zabbix"
 
-response = requests.post(url=token_url, json=data)
-
-cookie = {"zbx_sessionid": response.json()["result"]}
-
-queue_page = requests.get(queue_url, cookies=cookie)
-
-
+# 第1引数にキュー数を取りたいプロキシのホスト名を指定する
 target_proxy = sys.argv[1]
-total_queue = 0
+queue_count = 0
 
 
-html = html.fromstring(queue_page.content)
+def get_cookie(token_url, user, password):
+    """ZabbixGUIにアクセスするためのcookieを返す"""
+    data = {
+        "jsonrpc": "2.0",
+        "method": "user.login",
+        "params": {"user": user, "password": password},
+        "id": 1,
+    }
+    response = requests.post(url=token_url, json=data)
+    cookie = {"zbx_sessionid": response.json()["result"]}
 
-elements = html.findall('.//table[@class="list-table"]/tbody/tr/td')
-for num, element in enumerate(elements):
-    if target_proxy in element.text:
-        start = num + 1
-        end = num + 7
-        break
+    return cookie
 
-queue_elements = elements[start:end]
-for queue in queue_elements:
-    total_queue += int(queue.text)
 
-print(total_queue)
+def get_queue_page(queue_url, cookie):
+    """[管理>キュー]ページのHTMLデータを返す"""
+    queue_page = requests.get(url=queue_url, cookies=cookie)
+    html_queue_page = html.fromstring(queue_page.content)
+
+    return html_queue_page
+
+
+def get_queue_count(target_proxy, html_queue_page, queue_count):
+    """指定したプロキシの[管理>キュー]ページの合計キュー数を返す"""
+    elements = html_queue_page.findall('.//table[@class="list-table"]/tbody/tr/td')
+    for num, element in enumerate(elements):
+        if target_proxy in element.text:
+            start = num + 1
+            end = num + 7
+            break
+
+    queue_elements = elements[start:end]
+    for queue in queue_elements:
+        queue_count += int(queue.text)
+
+    return queue_count
+
+
+if __name__ == "__main__":
+    cookie = get_cookie(token_url=token_url, user=user, password=password)
+    html_queue_page = get_queue_page(queue_url=queue_url, cookie=cookie)
+    queue_count = get_queue_count(
+        target_proxy=target_proxy,
+        html_queue_page=html_queue_page,
+        queue_count=queue_count,
+    )
+
+    print(queue_count)
