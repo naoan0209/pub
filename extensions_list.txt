@@ -1,1 +1,1 @@
-https://ukewatashi2023.s3.ap-northeast-1.amazonaws.com/LINUX.ARM64_1919000_db_home.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAU76XEQ6TMRFLQVQS%2F20230830%2Fap-northeast-1%2Fs3%2Faws4_request&X-Amz-Date=20230830T005149Z&X-Amz-Expires=18000&X-Amz-SignedHeaders=host&X-Amz-Signature=2825596106a2c72c1116ea097c7d8fa564336cd4955f9f83d4a1af599a22526e
+
