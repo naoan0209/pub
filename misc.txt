@@ -1,39 +1,14 @@
-Javaでこのような動的なSQL `UPDATE` 操作を行う場合、トランザクションと特定の行に対する識別子（通常は主キー）をうまく利用することが一般的です。
+1. ロググループの分離
+- アプリケーション種別
+- 保存ライフサイクルの違い
+- アラーム単位 (サブスクリプションフィルタ数の制約考慮) 
+- 暗号化要件の有無
 
-以下は、概念的なステップとサンプルコードです：
+2. ログの保持期間の検討
+- LambdaなどAWSサービスが自動保存するログが永久保存されないよう期限を設定する
 
-1. **データベースから`notification_status`が0の行を取得**  
-このステップで行の一意な識別子（たとえば、`id`）も取得します。
+3. 保存ログに対する暗号化の考慮
 
-    ```java
-    List<Integer> targetIds = new ArrayList<>();
-    try (Connection conn = DriverManager.getConnection(url, username, password);
-         Statement stmt = conn.createStatement();
-         ResultSet rs = stmt.executeQuery("SELECT id FROM table_name WHERE notification_status = 0")) {
-
-        while (rs.next()) {
-            targetIds.add(rs.getInt("id"));
-        }
-    }
-    ```
-
-2. **中間処理を行う**  
-このステップでは、必要なビジネスロジックを実装します。
-
-3. **`notification_status`を1に更新**  
-前のステップで取得した識別子を使用して、対象となる行だけを更新します。
-
-    ```java
-    try (Connection conn = DriverManager.getConnection(url, username, password);
-         PreparedStatement pstmt = conn.prepareStatement("UPDATE table_name SET notification_status = 1 WHERE id = ?")) {
-
-        for (Integer id : targetIds) {
-            pstmt.setInt(1, id);
-            pstmt.addBatch();
-        }
-
-        pstmt.executeBatch();
-    }
-    ```
-
-このアプローチは`notification_status`が0の行を特定してからその行だけを更新するため、問題の制約に合致しています。ただし、この方法は複数のプログラムが同じデータベースを操作する場面でトランザクションを適切に管理する必要があります。必要であれば、各操作を適切なトランザクション制御の下で行うようにしてください。
+4. フィルタ設計
+- メトリクスフィルタ
+- サブスクリプションフィルタ
