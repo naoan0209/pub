@@ -1,18 +1,9 @@
-FROM public.ecr.aws/amazoncorretto/amazoncorretto:21-al2023-jdk AS build
-WORKDIR /app
-
-# Main.javaのコピー
-COPY Main.java .
-
-# Main.javaのコンパイル
-RUN javac Main.java
-
 # 実行ステージ
 FROM public.ecr.aws/amazoncorretto/amazoncorretto:21.0.2-al2023-headless
 WORKDIR /app
 
 # ビルドステージからコンパイル済みのMain.classをコピー
-COPY --from=build /app/Main.class .
+COPY sdktest-jar-with-dependencies.jar .
 
 # アプリケーションの実行
-CMD ["java", "Main"]
+CMD ["java", "-jar", "sdktest-jar-with-dependencies.jar"]
