@@ -1,0 +1,24 @@
+services:
+  apache:
+    container_name: apache
+    build:
+      context: ./apache
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./apache/conf/httpd.conf:/usr/local/apache2/conf/httpd.conf
+    depends_on:
+      - tomcat
+
+  tomcat:
+    container_name: tomcat
+    build:
+      context: ./tomcat
+      dockerfile: Dockerfile
+    volumes:
+      - ./tomcat/webapps:/usr/local/tomcat/webapps
+      - ./tomcat/conf/server.xml:/usr/local/tomcat/conf/server.xml
+    # ports:
+    #   - "8080:8080"
+    #   - "8009:8009"

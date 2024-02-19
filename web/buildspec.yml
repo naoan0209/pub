@@ -1,0 +1,33 @@
+# ------------------------------------------------------
+# CodeBuild
+# - コンテナイメージをビルドしてECRにプッシュする
+# - プッシュ先のリポジトリ名は「env/variables/xxxxx」で定義する
+# - コンテナイメージのタグはコミットIDとlatestを付与する
+# ------------------------------------------------------
+version: 0.2
+
+env:
+  variables:
+    ECR_REPOSITORY_NAME: tomcat  # リポジトリ名称
+
+phases:
+  pre_build:
+    commands:
+      - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
+      - ECR_BASE="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+      - aws ecr --region "${AWS_DEFAULT_REGION}" get-login-password | docker login --username AWS --password-stdin "${ECR_BASE}"
+      - REPOSITORY_URI="${ECR_BASE}/${ECR_REPOSITORY_NAME}"
+      - IMAGE_TAG=$(echo ${CODEBUILD_RESOLVED_SOURCE_VERSION} | cut -c 1-7)
+  build:
+    commands:
+      - docker image build --no-cache -t ${REPOSITORY_URI}:latest -t ${REPOSITORY_URI}:${IMAGE_TAG} -f container/tomcat/Dockerfile container/tomcat --platform=linux/arm64
+
+  post_build:
+    commands:
+      - docker image push ${REPOSITORY_URI}:${IMAGE_TAG}
+      - docker image push ${REPOSITORY_URI}:latest
+      - printf '{"name":"%s","ImageURI":"%s"}' "${ECR_REPOSITORY_NAME}" "${REPOSITORY_URI}:${IMAGE_TAG}" > imageDetail.json  # ECS BlueGreenデプロイメント用 https://docs.aws.amazon.com/ja_jp/codepipeline/latest/userguide/file-reference.html#file-reference-ecs-bluegreen
+
+artifacts:
+  files:
+    - imageDetail.json
