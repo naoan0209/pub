@@ -8,6 +8,6 @@
               username="${Database.user}"
               password="${Database.password}"
               driverClassName="com.mysql.jdbc.Driver"
-              url="jdbc:mysql://${Database.endpoint}/${Database.database}"
+              url="jdbc:mysql://${Database.endpoint}/${Database.}"
               validationQuery="SELECT 1"/>
 </Context>

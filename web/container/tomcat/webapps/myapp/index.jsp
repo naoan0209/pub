@@ -1,5 +1,8 @@
-<!DOCTYPE html>
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.net.InetAddress" %>
+<%@ page import="java.io.*" %>
+<%@ page import="java.time.LocalDateTime" %>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -9,8 +12,7 @@
   <body>
     <h1>Hello JSP</h1>
     <br />
-    <%@ page import="java.time.LocalDateTime" %> <%
-    out.println(LocalDateTime.now()); %>
+    <%= LocalDateTime.now() %>
     <%
     String userName = System.getProperty("user.name");
     String hostname = "unknown";
