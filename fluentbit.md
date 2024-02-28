@@ -1,141 +1,105 @@
-ECS Fargateタスクで複数のコンテナ（Apache, Tomcat）が同居しており、それぞれのログをFireLensを使ってCloudWatch LogsとAmazon S3に異なる出力先（ロググループとS3バケット）に出力する場合、以下のような手順で設定を行います。この設定では、ApacheとTomcatのログをそれぞれ異なるCloudWatch LogsのロググループとS3バケットに送信することができます。
+AWS ECSでApacheコンテナとTomcatコンテナを1つのタスクに同居させ、FireLensとカスタムFluent Bitイメージを使用してログを出力する設定は、主に以下の2つの部分から構成されます。
 
-### ステップ 1: タスク定義の作成
+1. **ECSタスク定義の設定**:
+   - Apacheコンテナ、Tomcatコンテナ、およびFluent BitをFireLensとして使用するコンテナを定義します。
+   - FireLensを使用してログの転送を設定します。
 
-まず、Apache、Tomcat、およびFireLens（カスタムFluent Bitコンテナ）を含むECS Fargateタスク定義を作成します。この際、ApacheとTomcatコンテナの`logConfiguration`でFireLensを使用するように指定します。
+2. **Fluent Bitの設定 (`fluent-bit.conf`)**:
+   - ApacheとTomcatのログにタグを付け、ログの出力先を制御するための設定を行います。
+
+### ECSタスク定義の設定
+
+ECSタスク定義では、`logConfiguration`のオプションを使用して、ApacheとTomcatのコンテナからのログをFireLensを介してFluent Bitに送信するように設定します。また、Fluent Bitコンテナを`firelensConfiguration`を使用して定義します。
+
+以下は、ApacheとTomcatのコンテナを含むECSタスク定義のJSONの概要例です（全ての設定オプションは含まれていません）。
 
 ```json
 {
+  "family": "your-task-definition-family",
   "containerDefinitions": [
     {
       "name": "apache",
-      "image": "httpd:latest",
-      "essential": true,
+      "image": "apache-image",
       "logConfiguration": {
         "logDriver": "awsfirelens",
         "options": {
-          "Name": "apache_log",
-          "tag": "apache"
+          "Name": "apache_logs",
+          "Tag": "apache"
         }
       }
     },
     {
       "name": "tomcat",
-      "image": "tomcat:latest",
-      "essential": true,
+      "image": "tomcat-image",
       "logConfiguration": {
         "logDriver": "awsfirelens",
         "options": {
-          "Name": "tomcat_log",
-          "tag": "tomcat"
+          "Name": "tomcat_logs",
+          "Tag": "tomcat"
         }
       }
     },
     {
-      "name": "firelens",
-      "image": "amazon/aws-for-fluent-bit:latest",
-      "essential": true,
+      "name": "firelens-container",
       "firelensConfiguration": {
-        "type": "fluentbit"
+        "type": "fluentbit",
+        "options": {
+          "config-file-type": "file",
+          "config-file-value": "/fluent-bit/etc/fluent-bit.conf"
+        }
       },
-      "memory": 256
+      "image": "custom-fluent-bit-image",
+      "essential": true
     }
-  ],
-  "requiresCompatibilities": ["FARGATE"],
-  "cpu": "256",
-  "memory": "512",
-  "networkMode": "awsvpc"
+  ]
 }
 ```
 
-### ステップ 2: Fluent Bitの設定
+### Fluent Bitの設定 (`fluent-bit.conf`)
 
-FireLensを使ってApacheとTomcatのログをそれぞれCloudWatch LogsとS3に送信するためのFluent Bit設定を用意します。以下は`fluent-bit.conf`の例です。
+Fluent Bitの設定では、ApacheとTomcatのログをそれぞれ異なる出力先に転送するためのフィルターと出力設定を定義します。以下は、`fluent-bit.conf`の例です。
 
-```ini
+```conf
 [SERVICE]
     Flush        1
     Log_Level    info
-    Daemon       Off
     Parsers_File parsers.conf
 
 [INPUT]
-    Name   forward
-    Listen 0.0.0.0
-    Port   24224
+    Name    forward
+    Listen  0.0.0.0
+    Port    24224
+    Tag     *
 
 [FILTER]
     Name    modify
     Match   apache
-    Set     log_group_name apache-logs
-    Set     s3_bucket your-apache-logs-s3-bucket
+    Add     log_type apache
 
 [FILTER]
     Name    modify
     Match   tomcat
-    Set     log_group_name tomcat-logs
-    Set     s3_bucket your-tomcat-logs-s3-bucket
+    Add     log_type tomcat
 
 [OUTPUT]
-    Name            cloudwatch
-    Match           apache
-    region          your-region
-    log_group_name  apache-logs
-    log_stream_prefix  from-fargate-
+    Name          es
+    Match         apache
+    Host          YOUR_ELASTICSEARCH_ENDPOINT
+    Port          443
+    Logstash_Format On
+    Replace_Dots   On
+    TLS           On
+    TLS.verify    Off
 
 [OUTPUT]
-    Name            cloudwatch
-    Match           tomcat
-    region          your-region
-    log_group_name  tomcat-logs
-    log_stream_prefix  from-fargate-
-
-[OUTPUT]
-    Name            s3
-    Match           apache
-    region          your-region
-    bucket          your-apache-logs-s3-bucket
-    s3_key_format   /apache/%Y/%m/%d/%H/%M/%S.log
-    total_file_size 1M
-    upload_timeout  1m
-    use_put_object  On
-
-[OUTPUT]
-    Name            s3
-    Match           tomcat
-    region          your-region
-    bucket          your-tomcat-logs-s3-bucket
-    s3_key_format   /tomcat/%Y/%m/%d/%H/%M/%S.log
-    total_file_size 1M
-    upload_timeout  1m
-    use_put_object  On
+    Name          s3
+    Match         tomcat
+    bucket        YOUR_S3_BUCKET_NAME
+    region        YOUR_AWS_REGION
+    s3_key_format /tomcat-logs/%Y/%m/%d/%H/%M/%S
+    use_put_object On
 ```
 
-この設定では、ApacheのログとTomcatのログをそれぞれ異なるCloudWatch LogsのロググループとS3バケットに送信するように指定しています。`Match`ディレクティブを使用して、ログのタグに基づいて出力先を分岐させています。
+この設定では、ApacheとTomcatからのログをそれぞれElasticsearchとAmazon S3に転送しています。`[FILTER]`セクションでログに`log_type`を追加し、これを使用して`[OUTPUT]`セクションでログの出力先を制御しています。
 
-
----
-
-"options": {
-          "Name": "tomcat_log",
-          "tag": "tomcat"
-        }
-ここで定義した情報に基づいてfluent-bit.confのMatchを制御しているということですか
-
-
-はい、その理解で正確です。`options`に設定した`"tag": "tomcat"`という情報は、Fluent Bitにおけるログのタグ付けに使用され、このタグを元に`fluent-bit.conf`内でのログのルーティング（どのログがどの`[OUTPUT]`に送信されるか）を制御しています。
-
-ECSタスク定義でコンテナの`logConfiguration`に`"tag": "tomcat"`のように指定すると、そのコンテナから出力されるログはすべて`tomcat`というタグが付けられます。Fluent Bitの設定ファイル(`fluent-bit.conf`)内で、`[INPUT]`セクションで受け取ったログを処理する際に、このタグに基づいてどの`[FILTER]`や`[OUTPUT]`セクションが適用されるかを決定します。
-
-例えば、以下のような`[OUTPUT]`セクションがあるとします。
-
-```ini
-[OUTPUT]
-    Name            cloudwatch
-    Match           tomcat
-    ...
-```
-
-ここでの`Match`ディレクティブが`tomcat`に設定されているため、タグが`tomcat`であるログのみがこの出力セクションにマッチし、CloudWatchに送信されることになります。同様に、他の出力先（例えばS3）にも異なるタグを用いることで、ApacheのログとTomcatのログを別々にルーティングすることが可能です。
-
-このように、Fluent Bitのタグとマッチングシステムを利用することで、複数のログソースを効率的に異なる出力先に振り分け、管理することができます。
+この構成を使用することで、1つのECSタスク内で複数のコンテナからのログを効率的に管理し、異なる出力先に転送することが可能になります。
