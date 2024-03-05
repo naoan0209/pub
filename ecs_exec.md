@@ -13,12 +13,13 @@ aws ecs update-service \
     --service tomcat\
     --enable-execute-command | grep enableExecuteCommand
 
+## 設定確認
 aws ecs describe-services \
 --cluster web \
 --services tomcat | grep enableExecuteCommand
 
+## コンテナ接続（Exec）
 TASK_ARN=$(aws ecs list-tasks --cluster web --query "taskArns[]"  --output text)
-
 aws ecs execute-command --cluster web \
     --task ${TASK_ARN} \
     --container tomcat \
