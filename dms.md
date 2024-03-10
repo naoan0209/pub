@@ -12,6 +12,10 @@ https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.M
 
 https://docs.aws.amazon.com/ja_jp/dms/latest/userguide/CHAP_Source.MySQL.html
 
+## Migrating a MySQL Database to RDS for MySQL or Aurora MySQL
+
+https://docs.aws.amazon.com/dms/latest/sbs/chap-manageddatabases.mysql2rds.html
+
 ## AWS DMS サーバーレスの制限事項
 
 https://docs.aws.amazon.com/ja_jp/dms/latest/userguide/CHAP_Serverless.Limitations.htm
