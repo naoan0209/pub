@@ -1,6 +1,6 @@
-# 調べなければいけないこと
+# 考えなければいけないこと
 
-## 参考
+## 参考（非常に参考になるので必ず読む）
 
 `https://blog.father.gedow.net/2023/10/23/aurora-migration-tips/#note03`
 
