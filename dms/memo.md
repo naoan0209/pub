@@ -1,8 +1,12 @@
 # 考えなければいけないこと
 
-## 参考（非常に参考になるので必ず読む）
+## 参考
 
+非常に参考になるので必ず読む
 `https://blog.father.gedow.net/2023/10/23/aurora-migration-tips/#note03`
+
+AWS公式の動画
+`https://www.youtube.com/watch?v=k_pnnwedtwU`
 
 ## そもそもDMS以外の選択肢があるか
 
@@ -10,6 +14,8 @@
 - 現在のソースバージョン(8.0.13)からターゲットバージョン（8.0.28）で利用できる機能である必要がある
 
 ## DMS制約事項
+
+`https://docs.aws.amazon.com/ja_jp/dms/latest/userguide/CHAP_Source.MySQL.html#CHAP_Source.MySQL.Limitations`
 
 - あらゆる制約事項を洗い出すこと
 - とくに型については注意事項が多い、問題が起こる可能性が高い
