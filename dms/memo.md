@@ -24,8 +24,10 @@ AWS公式の動画
   - インデックス、外部キー、カスケード更新、または削除が移行されない
 - ここでもバージョンについて必ず考慮すること
 
-ソースとしての制約と、ターゲットとしての制約
+ソースとしての制約
 `https://docs.aws.amazon.com/ja_jp/dms/latest/userguide/CHAP_Source.MySQL.html`
+
+ターゲットとしての制約
 `https://docs.aws.amazon.com/ja_jp/dms/latest/userguide/CHAP_Target.MySQL.html`
 
 ## 現環境の考慮
