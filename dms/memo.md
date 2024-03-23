@@ -8,6 +8,14 @@
 AWS公式の動画
 `https://www.youtube.com/watch?v=k_pnnwedtwU`
 
+ほか、事例
+
+- `https://tech.enigmo.co.jp/entry/2021/12/24/100000`
+- `https://qiita.com/hmatsu47/items/23e2f0b36ab46234b9db`
+- `https://chulip.org/entry/2023/04/19/211347`
+
+ありったけの事例を探してほしい
+
 ## そもそもDMS以外の選択肢があるか
 
 - DMSは有力だが、参考リンクのとおり、DMS以外にもバイナリログレプリケーションやストアドプロシージャを使った手法を検討してほしい
