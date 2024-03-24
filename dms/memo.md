@@ -14,7 +14,7 @@ BlackBelt
 AWS SCT と AWS DMS を使ってMySQLから Amazon Aurora に移行する方法
 `https://aws.amazon.com/jp/blogs/news/migrating-from-mysql-to-amazon-aurora-using-aws-sct-and-aws-dms/`
 
-DMSでバージョン互換性の問題が発生したときでも、SCTと組み合わせることで移行可能になるケースがあるとのこ
+DMSでバージョン互換性の問題が発生したときでも、SCTと組み合わせることで移行可能になるケースがあるとのこと
 
 ## 根本的な話
 
