@@ -7,6 +7,8 @@
 
 AWS公式の動画
 `https://www.youtube.com/watch?v=k_pnnwedtwU`
+BlackBelt
+`https://www.youtube.com/watch?v=Od83ySfrzGc`
 
 ほか、事例
 
