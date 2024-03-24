@@ -1,10 +1,5 @@
 # 考えなければいけないこと
 
-## Database Freedom
-
-- 無料でデータベース移行をサポートしてくれるらしい
-`https://aws.amazon.com/jp/solutions/databasemigrations/database-freedom/`
-
 ## 参考
 
 非常に参考になるので必ず読む
@@ -16,6 +11,16 @@ AWS公式の動画
 BlackBelt
 `https://www.youtube.com/watch?v=Od83ySfrzGc`
 
+AWS SCT と AWS DMS を使ってMySQLから Amazon Aurora に移行する方法
+`https://aws.amazon.com/jp/blogs/news/migrating-from-mysql-to-amazon-aurora-using-aws-sct-and-aws-dms/`
+
+DMSでバージョン互換性の問題が発生したときでも、SCTと組み合わせることで移行可能になるケースがあるとのこ
+
+## 根本的な話
+
+- 基本的にはmysqldumpなどのDBDSネイティブなツールを利用することが推奨されている
+- 口述するが、そもそもDMSではなくmysqldumpとバイナリログレプリケーションの組み合わせの方がいいのかもしれない
+
 ほか、事例
 
 - `https://tech.enigmo.co.jp/entry/2021/12/24/100000`
@@ -23,6 +28,11 @@ BlackBelt
 - `https://chulip.org/entry/2023/04/19/211347`
 
 ありったけの事例を探してほしい
+
+## Database Freedom
+
+- 無料でデータベース移行をサポートしてくれるらしい
+`https://aws.amazon.com/jp/solutions/databasemigrations/database-freedom/`
 
 ## そもそもDMS以外の選択肢があるか
 
