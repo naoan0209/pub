@@ -1,5 +1,10 @@
 # 考えなければいけないこと
 
+## Database Freedom
+
+- 無料でデータベース移行をサポートしてくれるらしい
+`https://aws.amazon.com/jp/solutions/databasemigrations/database-freedom/`
+
 ## 参考
 
 非常に参考になるので必ず読む
