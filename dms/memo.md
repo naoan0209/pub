@@ -34,6 +34,11 @@ DMSでバージョン互換性の問題が発生したときでも、SCTと組�
 - 無料でデータベース移行をサポートしてくれるらしい
 `https://aws.amazon.com/jp/solutions/databasemigrations/database-freedom/`
 
+## SCT
+
+アセスメントレポート
+`https://docs.aws.amazon.com/ja_jp/SchemaConversionTool/latest/userguide/CHAP_AssessmentReport.html`
+
 ## そもそもDMS以外の選択肢があるか
 
 - DMSは有力だが、参考リンクのとおり、DMS以外にもバイナリログレプリケーションやストアドプロシージャを使った手法を検討してほしい
