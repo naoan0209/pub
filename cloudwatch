@@ -1,0 +1,41 @@
+## CloudWatch Logs
+
+### ログ検索
+
+- firelensの自動付与キーを削除している場合（「OUTPUT log_key log」）
+`aws logs filter-log-events --log-group-name /ecs/web/apache --query 'events[].message' --output text | jq -r '.log'`
+
+#### 直近1時間だけ検索
+
+bash環境
+`aws logs filter-log-events \
+    --log-group-name "/ecs/web/apache" \
+    --start-time $(($(date --date='-1 hour' '+%s') * 1000)) \
+    --end-time $(($(date '+%s') * 1000)) \
+    --query 'events' \
+    | jq -r '.[].message'`
+
+mac環境
+`aws logs filter-log-events \
+    --log-group-name "/ecs/web/apache" \
+    --start-time $(($(date -v-1H +%s) * 1000)) \
+    --end-time $(($(date +%s) * 1000)) \
+    --query 'events' \
+    | jq -r '.[].message'`
+
+最大件数指定
+`aws logs filter-log-events \
+    --log-group-name "/ecs/web/apache" \
+    --start-time $(($(date -v-1H +%s) * 1000)) \
+    --end-time $(($(date +%s) * 1000)) \
+    --query 'events[0:10]' \
+    | jq -r '.[].message'`
+
+絞り込み（自動的に@messageフィールドの中を--filter-patternで指定）
+`aws logs filter-log-events \
+    --log-group-name "/ecs/web/apache" \
+    --start-time $(($(date -v-1H +%s) * 1000)) \
+    --end-time $(($(date +%s) * 1000)) \
+    --query 'events[0:10]' --filter-pattern '"404"' \
+    | jq -r '.[].message'`
+
