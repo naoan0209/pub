@@ -1,0 +1,142 @@
+{
+    "family": "web",
+    "containerDefinitions": [
+        {
+            "name": "apache",
+            "image": "<WEB_IMAGE_APACHE>",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "80",
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "mountPoints": [
+                {
+                    "sourceVolume": "my-shared-volume",
+                    "containerPath": "/app/share",
+                    "readOnly": false
+                }
+            ],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awsfirelens",
+                "options": {},
+                "secretOptions": []
+            },
+            "systemControls": []
+        },
+        {
+            "name": "tomcat",
+            "image": "<WEB_IMAGE_TOMCAT>",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "8009",
+                    "containerPort": 8009,
+                    "hostPort": 8009,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": false,
+            "environment": [],
+            "mountPoints": [
+                {
+                    "sourceVolume": "my-shared-volume",
+                    "containerPath": "/app/share",
+                    "readOnly": false
+                }
+            ],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awsfirelens",
+                "options": {},
+                "secretOptions": []
+            },
+            "systemControls": []
+        },
+        {
+            "name": "log-router",
+            "image": "977566148511.dkr.ecr.ap-northeast-1.amazonaws.com/fluentbit",
+            "cpu": 0,
+            "memoryReservation": 50,
+            "portMappings": [],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "SERVICE_NAME",
+                    "value": "my-service"
+                },
+                {
+                    "name": "AWS_REGION",
+                    "value": "ap-northeast-1"
+                },
+                {
+                    "name": "LOG_BUCKET_TOMCAT",
+                    "value": "web-log-firelens-977566148511"
+                },
+                {
+                    "name": "LOG_GROUP_APACHE",
+                    "value": "/ecs/web/apache"
+                },
+                {
+                    "name": "LOG_GROUP_TOMCAT",
+                    "value": "/ecs/web/tomcat"
+                }
+            ],
+            "mountPoints": [
+                {
+                    "sourceVolume": "my-shared-volume",
+                    "containerPath": "/app/share",
+                    "readOnly": false
+                }
+            ],
+            "volumesFrom": [],
+            "user": "0",
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "/ecs/web/fluentbit",
+                    "awslogs-region": "ap-northeast-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": [],
+            "firelensConfiguration": {
+                "type": "fluentbit",
+                "options": {
+                    "config-file-type": "file",
+                    "config-file-value": "/fluent-bit/custom.conf"
+                }
+            }
+        }
+    ],
+    "taskRoleArn": "arn:aws:iam::977566148511:role/EcsRunTaskRole",
+    "executionRoleArn": "arn:aws:iam::977566148511:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "volumes": [
+        {
+            "name": "my-shared-volume",
+            "host": {}
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512",
+    "ephemeralStorage": {
+        "sizeInGiB": 21
+    },
+    "runtimePlatform": {
+        "cpuArchitecture": "ARM64",
+        "operatingSystemFamily": "LINUX"
+    }
+}
