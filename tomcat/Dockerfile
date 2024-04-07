@@ -4,22 +4,15 @@
 FROM public.ecr.aws/docker/library/maven:3.9.6-amazoncorretto-21-al2023 as build
 WORKDIR /app
 
+# アプリケーションのビルド
 COPY ./app/src /app/src
 COPY ./app/pom.xml /app
-
 RUN mvn package
 
 # -------------------------------------------------------------------------
 # 実行ステージ
 # -------------------------------------------------------------------------
 FROM public.ecr.aws/docker/library/tomcat:9.0.87-jdk21-corretto-al2
-
-# ビルドステージで生成したwarファイルをコピー
-COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/
-COPY ./app/conf/server.xml /usr/local/tomcat/conf/server.xml
-COPY ./app/webapps/ROOT/index.jsp /usr/local/tomcat/webapps/ROOT/index.jsp
-# アクセスログを標準出力にリンク（server.xml と連携）
-RUN ln -sf /dev/stdout /usr/local/tomcat/logs/access_log.txt
 
 # タイムゾーンをJSTに設定
 ENV TZ=Asia/Tokyo
@@ -29,6 +22,14 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
 # パッケージをアップデート
 RUN yum update -y && \
     yum clean all
+
+# ビルドステージで生成したwarファイルをコピー
+COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/
+# war以外のファイルをコピー
+COPY ./app/conf/server.xml /usr/local/tomcat/conf/server.xml
+COPY ./app/webapps/ROOT/index.jsp /usr/local/tomcat/webapps/ROOT/index.jsp
+# アクセスログを標準出力にリンク（server.xml と連携）
+RUN ln -sf /dev/stdout /usr/local/tomcat/logs/access_log.txt
 
 # キック用シェルスクリプトをコピー
 COPY ./shell/tomcat.env /app/tomcat/
