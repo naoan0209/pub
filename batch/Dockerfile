@@ -4,10 +4,8 @@
 FROM public.ecr.aws/amazoncorretto/amazoncorretto:21-al2023-jdk AS build
 WORKDIR /app
 
-# SaySomething.javaのコピー
+# アプリケーションのビルド
 COPY SaySomething.java .
-
-# SaySomething.javaのコンパイル
 RUN javac SaySomething.java
 
 # -------------------------------------------------------------------------
@@ -15,18 +13,18 @@ RUN javac SaySomething.java
 # -------------------------------------------------------------------------
 FROM public.ecr.aws/amazoncorretto/amazoncorretto:21.0.2-al2023-headless
 
-# ビルドステージからコンパイル済みのSaySomething.classをコピー
-WORKDIR /app
-COPY --from=build /app/SaySomething.class .
+# タイムゾーンをJSTに設定
+ENV TZ=Asia/Tokyo
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone
 
 # パッケージをアップデート
 RUN dnf upgrade -y --releasever=latest && \
     dnf clean all
 
-# タイムゾーンをJSTに設定
-ENV TZ=Asia/Tokyo
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
-    echo $TZ > /etc/timezone
+# ビルドステージでビルドしたアプリケーションをコピー
+WORKDIR /app
+COPY --from=build /app/SaySomething.class .
 
 # アプリケーションの実行ユーザを作成、アプリケーション用ディレクトリの権限を変更
 RUN dnf install -y shadow-utils && \
