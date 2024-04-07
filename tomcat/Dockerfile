@@ -25,11 +25,11 @@ RUN yum update -y && \
 
 # ビルドステージで生成したwarファイルをコピー
 COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/
-# war以外のファイルをコピー
+# war以外のアプリケーション関連ファイルをコピー
 COPY ./app/conf/server.xml /usr/local/tomcat/conf/server.xml
 COPY ./app/webapps/ROOT/index.jsp /usr/local/tomcat/webapps/ROOT/index.jsp
-# アクセスログを標準出力にリンク（server.xml と連携）
-RUN ln -sf /dev/stdout /usr/local/tomcat/logs/access_log.txt
+# # アクセスログを標準出力にリンク（server.xmlのAccessLogValveを参照）
+# RUN ln -sf /dev/stdout /usr/local/tomcat/logs/access_log.txt
 
 # キック用シェルスクリプトをコピー
 COPY ./shell/tomcat.env /app/tomcat/
@@ -46,6 +46,6 @@ RUN yum install -y shadow-utils && \
 # 作成したユーザでアプリケーションを実行
 USER appuser
 
-# シェルスクリプトで初期化処理を行ってからメインプロセスを実行
+# シェルスクリプトで初期化処理を行ってからアプリケーションを実行
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["catalina.sh", "run"]
