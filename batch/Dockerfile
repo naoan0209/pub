@@ -25,7 +25,8 @@ RUN dnf upgrade -y --releasever=latest && \
 
 # タイムゾーンをJSTに設定
 ENV TZ=Asia/Tokyo
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone
 
 # アプリケーションの実行ユーザを作成、アプリケーション用ディレクトリの権限を変更
 RUN dnf install -y shadow-utils && \
