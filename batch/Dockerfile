@@ -1,7 +1,6 @@
 # -------------------------------------------------------------------------
 # ビルドステージ
 # -------------------------------------------------------------------------
-# https://gallery.ecr.aws/amazoncorretto/amazoncorretto
 FROM public.ecr.aws/amazoncorretto/amazoncorretto:21-al2023-jdk AS build
 WORKDIR /app
 
