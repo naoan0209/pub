@@ -1,0 +1,39 @@
+{
+    "Comment": "A description of my state machine",
+    "StartAt": "ECS RunTask",
+    "States": {
+      "ECS RunTask": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::ecs:runTask.sync",
+        "Parameters": {
+          "LaunchType": "FARGATE",
+          "PlatformVersion": "LATEST",
+          "Cluster": "クラスタのARNを入れてください",
+          "TaskDefinition": "タスク定義のARNを入れてください",
+          "NetworkConfiguration": {
+            "AwsvpcConfiguration": {
+              "Subnets": [
+                "サブネットIDを入れてください"
+              ],
+              "AssignPublicIp": "ENABLED",
+              "SecurityGroups": [
+                "セキュリティグループのIDを入れてください"
+              ]
+            }
+          },
+          "Overrides": {
+            "ContainerOverrides": [
+              {
+                "Name": "タスク定義で設定したコンテナ名を入れてください",
+                "Command.$": "$.cmdArguments"
+              }
+            ]
+          }
+        },
+        "Next": "Success"
+      },
+      "Success": {
+        "Type": "Succeed"
+      }
+    }
+  }
