@@ -1,0 +1,66 @@
+# -------------------------------------------------------------------------
+# ビルドステージ
+# -------------------------------------------------------------------------
+FROM public.ecr.aws/docker/library/maven:3.9.6-amazoncorretto-21-al2023 as build
+WORKDIR /app
+
+# アプリケーションのビルド
+COPY ./app/src /app/src
+COPY ./app/pom.xml /app
+RUN mvn package
+
+# -------------------------------------------------------------------------
+# 実行ステージ
+# Corretto + Tomcat10.0.xの構築のため、公式コンテナイメージを利用せず自前で実装
+# -------------------------------------------------------------------------
+FROM public.ecr.aws/amazoncorretto/amazoncorretto:21.0.2-al2023-headful
+
+WORKDIR /app
+
+# タイムゾーンをJSTに設定
+ENV TZ=Asia/Tokyo
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone
+
+# パッケージをアップデート
+RUN yum update -y && \
+    yum install -y wget tar gzip && \
+    yum clean all
+
+# Tomcat構築
+ENV TOMCAT_MAJOR 10
+ENV TOMCAT_VERSION 10.1.20
+ENV CATALINA_HOME /usr/local/tomcat
+
+RUN wget -q "https://dlcdn.apache.org/tomcat/tomcat-${TOMCAT_MAJOR}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz" && \
+    mkdir -p "${CATALINA_HOME}" && \
+    tar zxvf "apache-tomcat-${TOMCAT_VERSION}.tar.gz" -C "${CATALINA_HOME}" --strip-components=1
+
+# ビルドステージで生成したwarファイルをコピー
+COPY --from=build /app/target/*.war ${CATALINA_HOME}/webapps/
+# war以外のアプリケーション関連ファイルをコピー
+COPY ./app/conf/server.xml ${CATALINA_HOME}/conf/server.xml
+COPY ./app/webapps/ROOT/index.jsp ${CATALINA_HOME}/webapps/ROOT/index.jsp
+# # アクセスログを標準出力にリンク（server.xmlのAccessLogValveを参照）
+# RUN ln -sf /dev/stdout ${CATALINA_HOME}/logs/access_log.txt
+
+# キック用シェルスクリプトをコピー
+COPY ./shell/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# アプリケーションの実行ユーザを作成
+RUN yum install -y shadow-utils && \
+    yum clean all && \
+    groupadd appgroup && \
+    useradd appuser -g appgroup -d ${CATALINA_HOME} -s /bin/bash && \
+    chown -R appuser:appgroup ${CATALINA_HOME}
+
+# 作成したユーザでアプリケーションを実行
+USER appuser
+
+# 作法的に明示
+EXPOSE 8080
+
+# シェルスクリプトで初期化処理を行ってからアプリケーションを実行
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["/usr/local/tomcat/bin/catalina.sh", "run"]

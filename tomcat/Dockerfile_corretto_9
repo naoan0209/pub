@@ -1,7 +1,7 @@
 # -------------------------------------------------------------------------
 # ビルドステージ
 # -------------------------------------------------------------------------
-FROM public.ecr.aws/docker/library/maven:3.9.6-eclipse-temurin-21-jammy as build
+FROM public.ecr.aws/docker/library/maven:3.9.6-amazoncorretto-21-al2023 as build
 WORKDIR /app
 
 # アプリケーションのビルド
@@ -12,26 +12,16 @@ RUN mvn package
 # -------------------------------------------------------------------------
 # 実行ステージ
 # -------------------------------------------------------------------------
-FROM public.ecr.aws/docker/library/tomcat:10.1.20-jre21-temurin-jammy
-
-# パッケージをアップデート、追加パッケージをインストール
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y unzip language-pack-ja && \
-    apt-get clean && \
-    apt-get autoremove && \
-    rm -rf /var/lib/apt/lists/*
+FROM public.ecr.aws/docker/library/tomcat:9.0.87-jdk21-corretto-al2
 
 # タイムゾーンをJSTに設定
 ENV TZ=Asia/Tokyo
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone
 
-# ロケールを変更
-ENV LANG ja_JP.UTF-8
-ENV LANGUAGE ja_JP:ja
-ENV LC_ALL ja_JP.UTF-8
-RUN update-locale LANG=ja_JP.UTF-8
+# パッケージをアップデート
+RUN yum update -y && \
+    yum clean all
 
 # ビルドステージで生成したwarファイルをコピー
 COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/
@@ -46,13 +36,15 @@ COPY ./shell/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # アプリケーションの実行ユーザを作成
-RUN groupadd appgroup && \
-    useradd appuser -g appgroup && \
-    chown -R appuser:appgroup /app
+RUN yum install -y shadow-utils && \
+    yum clean all && \
+    groupadd appgroup && \
+    useradd appuser -g appgroup -d /usr/local/tomcat -s /bin/bash && \
+    chown -R appuser:appgroup /usr/local/tomcat
 
 # 作成したユーザでアプリケーションを実行
 USER appuser
 
-# アプリケーションを実行
+# シェルスクリプトで初期化処理を行ってからアプリケーションを実行
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-CMD ["java", "SaySomething"]
+CMD ["catalina.sh", "run"]
