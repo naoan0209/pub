@@ -1,0 +1,32 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "ECS RunTask",
+  "States": {
+    "ECS RunTask": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::ecs:runTask",
+      "Parameters": {
+        "LaunchType": "FARGATE",
+        "Cluster": "arn:aws:ecs:REGION:ACCOUNT_ID:cluster/MyECSCluster",
+        "TaskDefinition": "arn:aws:ecs:REGION:ACCOUNT_ID:task-definition/MyTaskDefinition:1"
+      },
+      "Next": "PutToEris"
+    },
+    "PutToEris": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:ssm:sendCommand",
+      "Parameters": {
+        "DocumentName": "AWS-RunShellScript",
+        "InstanceIds": [
+          "i-0e09a3926ba5ed63e"
+        ],
+        "Parameters": {
+          "commands": [
+            "/app/path/to/script/put_to_eris.sh"
+          ]
+        }
+      },
+      "End": true
+    }
+  }
+}
