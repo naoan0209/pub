@@ -1,9 +1,10 @@
 #!/bin/bash
+set -eu
 
-CLUSTER_NAME="batch"
-FAMILY_NAME="logtest"
-SUBNET_ID="subnet-0608d5771aa3cd3e8"
-SG_ID="sg-098c9fc4a97c9695e"
+# CLUSTER_NAME="batch"
+# FAMILY_NAME="logtest"
+# SUBNET_ID="subnet-0608d5771aa3cd3e8"
+# SG_ID="sg-098c9fc4a97c9695e"
 
 TASK_DEF_ARN=$(aws ecs list-task-definitions \
   --family-prefix "${FAMILY_NAME}" \
