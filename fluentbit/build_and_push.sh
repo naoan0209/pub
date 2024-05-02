@@ -1,6 +1,9 @@
 #!/bin/bash
 
-ACCOUNT="977566148511"
+# AWSアカウントID
+ACCOUNT=""
+
+# Dockerコンテナ名
 CONTAINER="fluentbit"
 
 if [ -z "${ACCOUNT}" ]; then
