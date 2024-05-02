@@ -1,8 +1,8 @@
 #!/bin/bash
+set -eu
 
 # AWSアカウントID
 ACCOUNT=""
-
 # Dockerコンテナ名
 CONTAINER="fluentbit"
 
