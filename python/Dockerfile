@@ -1,31 +1,32 @@
 # -------------------------------------------------------------------------
 # ビルドステージ
 # -------------------------------------------------------------------------
-FROM public.ecr.aws/docker/library/maven:3.9.6-eclipse-temurin-21-jammy as build
+FROM public.ecr.aws/docker/library/python:3.12-bookworm as build
 
 WORKDIR /app
 
-# ソースコードをコピー
-COPY ./app/src/ /app/src/
+ENV PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_DEFAULT_TIMEOUT=600
 
-# ビルド定義ファイルをコピー
-COPY ./app/pom.xml /app/pom.xml
-
-# ビルド
-RUN mvn package
+# Pythonパッケージをインストール
+COPY ./requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
 # -------------------------------------------------------------------------
 # 実行ステージ
 # -------------------------------------------------------------------------
-# Ubuntuベース
-FROM public.ecr.aws/docker/library/eclipse-temurin:21.0.2_13-jre-jammy
+# Debianベース
+FROM public.ecr.aws/docker/library/python:3.12-slim-bookworm
 
 WORKDIR /app
+
+ENV PYTHONUNBUFFERED=1
 
 # パッケージをアップデート、追加パッケージをインストール
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install --no-install-recommends -y language-pack-ja unzip jq && \
+    apt-get install --no-install-recommends -y locales unzip jq && \
     apt-get clean && \
     apt-get autoremove && \
     rm -rf /var/lib/apt/lists/*
@@ -37,8 +38,8 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
 
 # ロケールを変更
 ENV LANG=ja_JP.UTF-8
-ENV LANGUAGE=
-ENV LC_ALL=
+RUN sed -i '/ja_JP.UTF-8/s/^# //g' /etc/locale.gen && \
+    locale-gen
 
 # aws cliをインストール
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip" && \
@@ -58,12 +59,16 @@ RUN groupadd -g ${GID} ${GROUP} && \
 
 USER ${USER}
 
-# ビルドステージでビルドしたアプリケーションをコピー
-COPY --chown=${USER}:${GROUP} --from=build /app/ /app/
-
 # キック用シェルスクリプトをコピー
 COPY --chown=${USER}:${GROUP} ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+# ビルドステージでインストールしたパッケージをコピー
+COPY --chown=${USER}:${GROUP} --from=build /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
+
+# アプリケーションをコピー
+COPY --chown=${USER}:${GROUP} ./src/ /app/src/
+
 # アプリケーションを実行
-CMD ["java", "-jar", "target/myapp.jar"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["python", "./src/task.py"]

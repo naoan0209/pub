@@ -15,7 +15,7 @@ RUN mvn package
 # 実行ステージ
 # -------------------------------------------------------------------------
 FROM public.ecr.aws/docker/library/eclipse-temurin:21.0.2_13-jre-jammy
-# タイムゾーンをJSTに設定
+# タイムゾーンを変更
 ENV TZ=Asia/Tokyo
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone

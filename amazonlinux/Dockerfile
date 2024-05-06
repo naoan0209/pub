@@ -1,34 +1,15 @@
 # -------------------------------------------------------------------------
-# ビルドステージ
-# -------------------------------------------------------------------------
-FROM public.ecr.aws/docker/library/maven:3.9.6-eclipse-temurin-21-jammy as build
-
-WORKDIR /app
-
-# ソースコードをコピー
-COPY ./app/src/ /app/src/
-
-# ビルド定義ファイルをコピー
-COPY ./app/pom.xml /app/pom.xml
-
-# ビルド
-RUN mvn package
-
-# -------------------------------------------------------------------------
 # 実行ステージ
 # -------------------------------------------------------------------------
-# Ubuntuベース
-FROM public.ecr.aws/docker/library/eclipse-temurin:21.0.2_13-jre-jammy
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023-minimal
 
 WORKDIR /app
 
 # パッケージをアップデート、追加パッケージをインストール
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install --no-install-recommends -y language-pack-ja unzip jq && \
-    apt-get clean && \
-    apt-get autoremove && \
-    rm -rf /var/lib/apt/lists/*
+RUN dnf upgrade -y --releasever=latest && \
+    dnf install -y tzdata glibc-langpack-ja shadow-utils unzip jq && \
+    dnf clean all && \
+    rm -rf /var/cache/yum
 
 # タイムゾーンを変更
 ENV TZ=Asia/Tokyo
@@ -37,8 +18,6 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
 
 # ロケールを変更
 ENV LANG=ja_JP.UTF-8
-ENV LANGUAGE=
-ENV LC_ALL=
 
 # aws cliをインストール
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip" && \
@@ -58,12 +37,13 @@ RUN groupadd -g ${GID} ${GROUP} && \
 
 USER ${USER}
 
-# ビルドステージでビルドしたアプリケーションをコピー
-COPY --chown=${USER}:${GROUP} --from=build /app/ /app/
-
 # キック用シェルスクリプトをコピー
 COPY --chown=${USER}:${GROUP} ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+# アプリケーションをコピー
+COPY --chown=${USER}:${GROUP} ./src/ /app/src/
+
 # アプリケーションを実行
-CMD ["java", "-jar", "target/myapp.jar"]
+# ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["/bin/bash"]

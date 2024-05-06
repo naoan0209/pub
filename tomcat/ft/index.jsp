@@ -10,7 +10,8 @@
     <title>Document</title>
   </head>
   <body>
-    <h1>Hello JSP</h1>
+    <h1>Hello FROM FT</h1>
+    <br />
     <%= LocalDateTime.now() %>
     <%
     String userName = System.getProperty("user.name");

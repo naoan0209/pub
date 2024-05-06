@@ -1,0 +1,39 @@
+{
+    "Comment": "A description of my state machine",
+    "StartAt": "ECS RunTask",
+    "States": {
+      "ECS RunTask": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::ecs:runTask.sync",
+        "Parameters": {
+          "LaunchType": "FARGATE",
+          "PlatformVersion": "LATEST",
+          "Cluster": "arn:aws:ecs:ap-northeast-1:977566148511:cluster/batch",
+          "TaskDefinition": "arn:aws:ecs:ap-northeast-1:977566148511:task-definition/amazonlinux:1",
+          "NetworkConfiguration": {
+            "AwsvpcConfiguration": {
+              "Subnets": [
+                "subnet-0608d5771aa3cd3e8"
+              ],
+              "AssignPublicIp": "ENABLED",
+              "SecurityGroups": [
+                "sg-098c9fc4a97c9695e"
+              ]
+            }
+          },
+          "Overrides": {
+            "ContainerOverrides": [
+              {
+                "Name": "amazonlinux",
+                "Command.$": "$.cmdArguments"
+              }
+            ]
+          }
+        },
+        "Next": "Success"
+      },
+      "Success": {
+        "Type": "Succeed"
+      }
+    }
+  }

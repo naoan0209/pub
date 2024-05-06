@@ -1,1 +1,1 @@
-<% response.sendRedirect(request.getContextPath() + "/myapp/"); %>
+<% response.sendRedirect("/myapp/"); %>
