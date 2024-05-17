@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ACCOUNT="977566148511"
+ACCOUNT=""
 CONTAINER="amazonlinux"
 
 if [ -z "${ACCOUNT}" ]; then
