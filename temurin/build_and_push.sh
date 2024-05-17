@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ACCOUNT="977566148511"
+ACCOUNT=""
 CONTAINER="temurin"
 
 if [ -z "${ACCOUNT}" ]; then
