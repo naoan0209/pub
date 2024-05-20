@@ -37,7 +37,7 @@ RUN groupadd -g ${GID} ${GROUP} && \
 
 USER ${USER}
 
-# キック用シェルスクリプトをコピー
+# キック用シェルスクリプトをコピー（一例、直接メイン処理のスクリプトを実行するなら不要）
 COPY --chown=${USER}:${GROUP} ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
@@ -45,5 +45,5 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 COPY --chown=${USER}:${GROUP} ./src/ /app/src/
 
 # アプリケーションを実行
-# ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["/bin/bash"]
