@@ -37,14 +37,15 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
 
 # ロケールを変更
 ENV LANG=ja_JP.UTF-8
-ENV LANGUAGE=
-ENV LC_ALL=
+ENV LANGUAGE=""
+ENV LC_ALL=""
 
-# aws cliをインストール
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip" && \
-    unzip ./awscliv2.zip && \
-    ./aws/install && \
-    rm -f ./awscliv2.zip
+# # aws cliをインストール
+# # Java系バッチでは不要
+# RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip" && \
+#     unzip ./awscliv2.zip && \
+#     ./aws/install && \
+#     rm -f ./awscliv2.zip
 
 # アプリケーション実行ユーザを変更
 ARG USER=appuser
@@ -61,7 +62,7 @@ USER ${USER}
 # ビルドステージでビルドしたアプリケーションをコピー
 COPY --chown=${USER}:${GROUP} --from=build /app/ /app/
 
-# キック用シェルスクリプトをコピー
+# キック用シェルスクリプトをコピー（一例）
 COPY --chown=${USER}:${GROUP} ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
