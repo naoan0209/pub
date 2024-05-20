@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=600
 
-# Pythonパッケージをインストール
+# Pythonパッケージをインストール（pipの例）
 COPY ./requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
@@ -41,11 +41,11 @@ ENV LANG=ja_JP.UTF-8
 RUN sed -i '/ja_JP.UTF-8/s/^# //g' /etc/locale.gen && \
     locale-gen
 
-# aws cliをインストール
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip" && \
-    unzip ./awscliv2.zip && \
-    ./aws/install && \
-    rm -f ./awscliv2.zip
+# # aws cliをインストール（Pythonバッチでは不要）
+# RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip" && \
+#     unzip ./awscliv2.zip && \
+#     ./aws/install && \
+#     rm -f ./awscliv2.zip
 
 # アプリケーション実行ユーザを変更
 ARG USER=appuser
@@ -59,7 +59,7 @@ RUN groupadd -g ${GID} ${GROUP} && \
 
 USER ${USER}
 
-# キック用シェルスクリプトをコピー
+# キック用シェルスクリプトをコピー（一例）
 COPY --chown=${USER}:${GROUP} ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
