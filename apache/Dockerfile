@@ -33,3 +33,4 @@ USER ${USER}
 
 # 設定ファイルをコピー
 COPY --chown=${USER}:${GROUP} ./conf/ /usr/local/apache2/conf/
+COPY --chown=${USER}:${GROUP} ./index.html /usr/local/apache2/htdocs/index.html
