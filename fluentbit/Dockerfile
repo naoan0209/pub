@@ -11,34 +11,30 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 # Webアプリ用
 # -------------------------------------------------------------------------
 FROM base as web
-# カスタムコンフィグ
-COPY ./conf/web/extra.conf /fluent-bit/.conf
-# パーサ
+
+COPY ./conf/web/extra.conf /fluent-bit/extra.conf
 COPY ./conf/web/parsers.conf /fluent-bit/parsers.conf
 
 # -------------------------------------------------------------------------
 # バッチ（Java）用
 # -------------------------------------------------------------------------
 FROM base as java
-# カスタムコンフィグ
-COPY ./conf/java/extra.conf /fluent-bit/.conf
-# パーサ
+
+COPY ./conf/java/extra.conf /fluent-bit/extra.conf
 COPY ./conf/java/parsers.conf /fluent-bit/parsers.conf
 
 # -------------------------------------------------------------------------
 # バッチ（シェルスクリプト）用
 # -------------------------------------------------------------------------
 FROM base as shell
-# カスタムコンフィグ
-COPY ./conf/shell/extra.conf /fluent-bit/.conf
-# パーサ
+
+COPY ./conf/shell/extra.conf /fluent-bit/extra.conf
 COPY ./conf/shell/parsers.conf /fluent-bit/parsers.conf
 
 # -------------------------------------------------------------------------
 # バッチ（Python）用
 # -------------------------------------------------------------------------
 FROM base as python
-# カスタムコンフィグ
-COPY ./conf/python/extra.conf /fluent-bit/.conf
-# パーサ
+
+COPY ./conf/python/extra.conf /fluent-bit/extra.conf
 COPY ./conf/python/parsers.conf /fluent-bit/parsers.conf
