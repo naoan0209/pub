@@ -2,7 +2,7 @@
 
 ## ファイル構成
 
-.
+fluentbit
 ├── README.md
 ├── Dockerfile
 └── conf
