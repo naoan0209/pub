@@ -1,39 +1,48 @@
 {
-    "Comment": "A description of my state machine",
-    "StartAt": "ECS RunTask",
-    "States": {
-      "ECS RunTask": {
-        "Type": "Task",
-        "Resource": "arn:aws:states:::ecs:runTask.sync",
-        "Parameters": {
-          "LaunchType": "FARGATE",
-          "PlatformVersion": "LATEST",
-          "Cluster": "クラスタのARNを入れてください",
-          "TaskDefinition": "タスク定義のARNを入れてください",
-          "NetworkConfiguration": {
-            "AwsvpcConfiguration": {
-              "Subnets": [
-                "サブネットIDを入れてください"
-              ],
-              "AssignPublicIp": "ENABLED",
-              "SecurityGroups": [
-                "セキュリティグループのIDを入れてください"
-              ]
-            }
-          },
-          "Overrides": {
-            "ContainerOverrides": [
-              {
-                "Name": "タスク定義で設定したコンテナ名を入れてください",
-                "Command.$": "$.cmdArguments"
-              }
+  "Comment": "A description of my state machine",
+  "StartAt": "ECS RunTask",
+  "States": {
+    "ECS RunTask": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::ecs:runTask.sync",
+      "Parameters": {
+        "LaunchType": "FARGATE",
+        "PlatformVersion": "LATEST",
+        "Cluster": "arn:aws:ecs:ap-northeast-1:977566148511:cluster/batch",
+        "TaskDefinition": "arn:aws:ecs:ap-northeast-1:977566148511:task-definition/temurin",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "Subnets": [
+              "subnet-0608d5771aa3cd3e8"
+            ],
+            "AssignPublicIp": "ENABLED",
+            "SecurityGroups": [
+              "sg-098c9fc4a97c9695e"
             ]
           }
         },
-        "Next": "Success"
+        "Overrides": {
+          "ContainerOverrides": [
+            {
+              "Name": "temurin",
+              "Command.$": "$.cmdArguments"
+            }
+          ]
+        }
       },
-      "Success": {
-        "Type": "Succeed"
-      }
+      "Next": "Success",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "ECS.AmazonECSException"
+          ],
+          "IntervalSeconds": 10,
+          "MaxAttempts": 3
+        }
+      ]
+    },
+    "Success": {
+      "Type": "Succeed"
     }
   }
+}
