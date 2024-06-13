@@ -1,0 +1,10 @@
+[Unit]
+Description=S3 Mount Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/s3mount.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
