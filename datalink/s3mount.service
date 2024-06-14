@@ -1,6 +1,5 @@
 [Unit]
 Description=Mount s3://s3-mount-977566148511 at /mnt/app
-Wants=network-online.target
 After=network-online.target
 AssertPathIsDirectory=/mnt/app
 
@@ -8,7 +7,7 @@ AssertPathIsDirectory=/mnt/app
 Type=forking
 User=ssm-user
 Group=ssm-user
-ExecStart=/usr/bin/mount-s3 s3-mount-977566148511 /mnt/app --allow-delete --allow-other --dir-mode 777 --file-mode 666
+ExecStart=/usr/bin/mount-s3 s3-mount-977566148511 /mnt/app --allow-delete --allow-other --dir-mode 777 --file-mode 666 --maximum-throughput-gbps 1
 ExecStop=/usr/bin/fusermount -u /mnt/app
 Restart=never
 
