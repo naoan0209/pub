@@ -1,10 +1,16 @@
 [Unit]
-Description=S3 Mount Service
-After=network.target
+Description=Mount s3://s3-mount-977566148511 at /mnt/app
+Wants=network-online.target
+After=network-online.target
+AssertPathIsDirectory=/mnt/app
 
 [Service]
-ExecStart=/usr/bin/s3mount.sh
-Restart=always
+Type=forking
+User=ssm-user
+Group=ssm-user
+ExecStart=/usr/bin/mount-s3 s3-mount-977566148511 /mnt/app --allow-delete --allow-other --dir-mode 777 --file-mode 666
+ExecStop=/usr/bin/fusermount -u /mnt/app
+Restart=never
 
 [Install]
 WantedBy=multi-user.target
