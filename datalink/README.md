@@ -23,18 +23,26 @@ vim /etc/systemd/system/s3mount.service
 # ユニットファイル確認
 cat /etc/systemd/system/s3mount.service
 
+# allow_otherを有効にする
+echo "user_allow_other" | sudo tee -a /etc/fuse.conf
+
 # サービス開始
 systemctl daemon-reload
 systemctl status s3mount.service
 systemctl enable s3mount.service
 systemctl start s3mount.service
-
-# サービス確認 incactive (dead）
 systemctl status s3mount.service
 
+# mount確認
+mount
+# 最終行付近に mountpoint-s3 on がある
 
-# スクリプト作成 s3mount.shの内容を貼り付け
-vim /usr/bin/s3mount.sh
+# あとはファイルを作成したり、自由に操作
 
-cat /usr/bin/s3mount.sh
-chmod +x /usr/bin/s3mount.sh
+
+# アンマウントの確認（umountコマンドではアンマウントできないことがある）
+systemctl stop s3mount.service
+mount
+
+# 再マウント
+systemctl start s3mount.service
