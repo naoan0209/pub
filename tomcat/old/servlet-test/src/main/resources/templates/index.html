@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Hello Tomcat</h1>
+    <p
+      th:text="${#dates.format(new java.util.Date(), 'yyyy-MM-dd HH:mm:ss')}"
+    ></p>
+    <p>実行ユーザ名: <span th:text="${userName}"></span></p>
+    <p>ホスト名: <span th:text="${hostname}"></span></p>
+  </body>
+</html>
