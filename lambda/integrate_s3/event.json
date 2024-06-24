@@ -1,0 +1,28 @@
+{
+    "version": "0",
+    "id": "eeee0180-d289-7060-3d7b-6e02159a746f",
+    "detail-type": "Object Created",
+    "source": "aws.s3",
+    "account": "977566148511",
+    "time": "2024-06-24T09:19:33Z",
+    "region": "ap-northeast-1",
+    "resources": [
+        "arn:aws:s3:::s3-event-source-977566148511"
+    ],
+    "detail": {
+        "version": "0",
+        "bucket": {
+            "name": "s3-event-source-977566148511"
+        },
+        "object": {
+            "key": "app/source/output.csv",
+            "size": 1543,
+            "etag": "6b16b8e8ac52c5943510dc31e3619e06",
+            "sequencer": "0066793A256B25B94D"
+        },
+        "request-id": "VS831PADTKQ8G3NJ",
+        "requester": "977566148511",
+        "source-ip-address": "175.177.49.166",
+        "reason": "PutObject"
+    }
+}
