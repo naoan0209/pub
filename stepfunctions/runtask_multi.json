@@ -15,7 +15,6 @@
             "Subnets": [
               "subnet-0608d5771aa3cd3e8"
             ],
-            "AssignPublicIp": "ENABLED",
             "SecurityGroups": [
               "sg-098c9fc4a97c9695e"
             ]
@@ -54,7 +53,6 @@
             "Subnets": [
               "subnet-0608d5771aa3cd3e8"
             ],
-            "AssignPublicIp": "ENABLED",
             "SecurityGroups": [
               "sg-098c9fc4a97c9695e"
             ]
@@ -93,7 +91,6 @@
             "Subnets": [
               "subnet-0608d5771aa3cd3e8"
             ],
-            "AssignPublicIp": "ENABLED",
             "SecurityGroups": [
               "sg-098c9fc4a97c9695e"
             ]
