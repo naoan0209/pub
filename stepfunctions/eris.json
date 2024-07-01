@@ -19,17 +19,17 @@
               "sg-098c9fc4a97c9695e"
             ]
           }
-        },
-        "Retry": [
-          {
-            "ErrorEquals": [
-              "ECS.AmazonECSException"
-            ],
-            "IntervalSeconds": 10,
-            "MaxAttempts": 3
-          }
-        ]
+        }
       },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "ECS.AmazonECSException"
+          ],
+          "IntervalSeconds": 10,
+          "MaxAttempts": 3
+        }
+      ],
       "Next": "SendCommands"
     },
     "SendCommands": {
