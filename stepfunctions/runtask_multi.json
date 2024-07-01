@@ -1,0 +1,123 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "ECS RunTask1",
+  "States": {
+    "ECS RunTask1": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::ecs:runTask.sync",
+      "Parameters": {
+        "LaunchType": "FARGATE",
+        "PlatformVersion": "LATEST",
+        "Cluster": "arn:aws:ecs:ap-northeast-1:977566148511:cluster/batch",
+        "TaskDefinition": "arn:aws:ecs:ap-northeast-1:977566148511:task-definition/temurin",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "Subnets": [
+              "subnet-0608d5771aa3cd3e8"
+            ],
+            "AssignPublicIp": "ENABLED",
+            "SecurityGroups": [
+              "sg-098c9fc4a97c9695e"
+            ]
+          }
+        },
+        "Overrides": {
+          "ContainerOverrides": [
+            {
+              "Name": "temurin",
+              "Command.$": "$.cmdArguments"
+            }
+          ]
+        }
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "ECS.AmazonECSException"
+          ],
+          "IntervalSeconds": 10,
+          "MaxAttempts": 3
+        }
+      ],
+      "Next": "ECS RunTask2"
+    },
+    "ECS RunTask2": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::ecs:runTask.sync",
+      "Parameters": {
+        "LaunchType": "FARGATE",
+        "PlatformVersion": "LATEST",
+        "Cluster": "arn:aws:ecs:ap-northeast-1:977566148511:cluster/batch",
+        "TaskDefinition": "arn:aws:ecs:ap-northeast-1:977566148511:task-definition/temurin",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "Subnets": [
+              "subnet-0608d5771aa3cd3e8"
+            ],
+            "AssignPublicIp": "ENABLED",
+            "SecurityGroups": [
+              "sg-098c9fc4a97c9695e"
+            ]
+          }
+        },
+        "Overrides": {
+          "ContainerOverrides": [
+            {
+              "Name": "temurin",
+              "Command.$": "$.cmdArguments"
+            }
+          ]
+        }
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "ECS.AmazonECSException"
+          ],
+          "IntervalSeconds": 10,
+          "MaxAttempts": 3
+        }
+      ],
+      "Next": "ECS RunTask3"
+    },
+    "ECS RunTask3": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::ecs:runTask.sync",
+      "Parameters": {
+        "LaunchType": "FARGATE",
+        "PlatformVersion": "LATEST",
+        "Cluster": "arn:aws:ecs:ap-northeast-1:977566148511:cluster/batch",
+        "TaskDefinition": "arn:aws:ecs:ap-northeast-1:977566148511:task-definition/temurin",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "Subnets": [
+              "subnet-0608d5771aa3cd3e8"
+            ],
+            "AssignPublicIp": "ENABLED",
+            "SecurityGroups": [
+              "sg-098c9fc4a97c9695e"
+            ]
+          }
+        },
+        "Overrides": {
+          "ContainerOverrides": [
+            {
+              "Name": "temurin",
+              "Command.$": "$.cmdArguments"
+            }
+          ]
+        }
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "ECS.AmazonECSException"
+          ],
+          "IntervalSeconds": 10,
+          "MaxAttempts": 3
+        }
+      ],
+      "End": true
+    }
+  }
+}
