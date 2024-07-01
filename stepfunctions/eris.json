@@ -21,9 +21,8 @@
           "i-0e09a3926ba5ed63e"
         ],
         "Parameters": {
-          "commands": [
-            "/app/path/to/script/put_to_eris.sh"
-          ]
+          "commands.$": "States.Array(States.Format('/home/ssm-user/myecho.sh {} {}', $.cmdArguments[0], $.cmdArguments[1]))"
+        }
         }
       },
       "End": true
