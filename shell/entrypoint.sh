@@ -19,7 +19,6 @@ trap 'terminate' SIGTERM
 
 # 無限ループでJARファイルを1分おきに実行
 while true; do
-
     java -jar "$JAR_FILE" &
     JAR_PID=$!
 
