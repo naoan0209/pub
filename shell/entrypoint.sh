@@ -20,7 +20,7 @@ trap 'terminate' SIGTERM
 # JARファイルを1分おきに実行
 while true; do
     # バッチを実行
-    java -jar "$JAR_FILE" &
+    java -jar "$JAR_FILE" "$@" &
     JAR_PID=$!
 
     # 1分待機
