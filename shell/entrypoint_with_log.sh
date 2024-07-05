@@ -27,11 +27,11 @@ terminate() {
 # SIGTERMシグナルをキャッチしてterminate関数を実行
 trap 'terminate' SIGTERM
 
-# 無限ループでJARファイルを1分おきに実行
+# JARファイルを1分おきに実行
 while true; do
     logging_debug "Executing JAR file..."
 
-    java -jar "$JAR_FILE" &
+    java -jar "$JAR_FILE" "$@" &
     JAR_PID=$!
 
     # 1分待機
