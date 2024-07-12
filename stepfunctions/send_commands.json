@@ -21,7 +21,7 @@
           "i-0e09a3926ba5ed63e"
         ],
         "Parameters": {
-          "commands.$": "States.Array(States.Format('/home/ssm-user/myecho.sh {} {}', $.cmdArguments[0], $.cmdArguments[1]))"
+          "commands.$": "States.Array(States.Format('/home/ssm-user/myecho.sh {} {} {} {} {} {}', $.id[0], $.id[1], $.mode[0], $.mode[1], $.target[0], $.target[1]))"
         }
         }
       },
