@@ -1,18 +1,9 @@
 # Fluent Bit
 
-## ファイル構成
-
-fluentbit
-├── README.md
-├── Dockerfile
-└── conf
-    ├── java
-    │   ├── extra.conf
-    │   └── parsers.conf
-    ├── python
-    └── shell
-
-## ビルド方法
+## 最新のstableを確認するコマンド
+aws ssm get-parameters \
+    --names /aws/service/aws-for-fluent-bit/stable \
+    --region ap-northeast-1
 
 ### マルチステージビルド
 
