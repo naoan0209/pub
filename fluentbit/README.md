@@ -21,9 +21,5 @@ fluentbit
   - "Java"
   - "Shell"
   - "Python"
-- 指定された文字列を
-
+  - 
 `docker build --target ${TYPE} -t fluent-bit:${TYPE}`
-
-
-https://kakakakakku.hatenablog.com/entry/2023/05/29/094701
