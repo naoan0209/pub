@@ -1,19 +1,11 @@
 {
-    "family": "web",
+    "family": "logtest",
     "containerDefinitions": [
         {
-            "name": "apache",
-            "image": "977566148511.dkr.ecr.ap-northeast-1.amazonaws.com/apache",
+            "name": "logtest",
+            "image": "977566148511.dkr.ecr.ap-northeast-1.amazonaws.com/logtest",
             "cpu": 0,
-            "portMappings": [
-                {
-                    "name": "80",
-                    "containerPort": 80,
-                    "hostPort": 80,
-                    "protocol": "tcp",
-                    "appProtocol": "http"
-                }
-            ],
+            "portMappings": [],
             "essential": true,
             "environment": [],
             "mountPoints": [],
@@ -26,31 +18,8 @@
             "systemControls": []
         },
         {
-            "name": "tomcat",
-            "image": "977566148511.dkr.ecr.ap-northeast-1.amazonaws.com/tomcat",
-            "cpu": 0,
-            "portMappings": [
-                {
-                    "name": "8009",
-                    "containerPort": 8009,
-                    "hostPort": 8009,
-                    "protocol": "tcp"
-                }
-            ],
-            "essential": false,
-            "environment": [],
-            "mountPoints": [],
-            "volumesFrom": [],
-            "logConfiguration": {
-                "logDriver": "awsfirelens",
-                "options": {},
-                "secretOptions": []
-            },
-            "systemControls": []
-        },
-        {
-            "name": "log-router",
-            "image": "977566148511.dkr.ecr.ap-northeast-1.amazonaws.com/fluentbit",
+            "name": "log_router",
+            "image": "public.ecr.aws/aws-observability/aws-for-fluent-bit:init-arm64-2.32.2.20240627",
             "cpu": 0,
             "memoryReservation": 50,
             "portMappings": [],
@@ -61,16 +30,32 @@
                     "value": "my-service"
                 },
                 {
+                    "name": "LOGGROUP_UNMATCHED",
+                    "value": "/ecs/component/unmatched"
+                },
+                {
                     "name": "AWS_REGION",
                     "value": "ap-northeast-1"
                 },
                 {
-                    "name": "LOG_BUCKET_TOMCAT",
-                    "value": "web-log-firelens-977566148511"
-                },
-                {
                     "name": "LOG_GROUP_APACHE",
                     "value": "/ecs/web/apache"
+                },
+                {
+                    "name": "aws_fluent_bit_init_s3_1",
+                    "value": "arn:aws:s3:::parameter-977566148511/fluentbit/extra.conf"
+                },
+                {
+                    "name": "aws_fluent_bit_init_s3_2",
+                    "value": "arn:aws:s3:::parameter-977566148511/fluentbit/parsers.conf"
+                },
+                {
+                    "name": "LOGGROUP_APP",
+                    "value": "/ecs/logtest"
+                },
+                {
+                    "name": "FLB_LOG_LEVEL",
+                    "value": "info"
                 },
                 {
                     "name": "LOG_GROUP_TOMCAT",
@@ -83,8 +68,8 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
+                    "awslogs-group": "/ecs/logtest/fluentbit",
                     "awslogs-create-group": "true",
-                    "awslogs-group": "/ecs/web/fluentbit",
                     "awslogs-region": "ap-northeast-1",
                     "awslogs-stream-prefix": "ecs"
                 },
@@ -92,11 +77,7 @@
             },
             "systemControls": [],
             "firelensConfiguration": {
-                "type": "fluentbit",
-                "options": {
-                    "config-file-type": "file",
-                    "config-file-value": "/fluent-bit/custom.conf"
-                }
+                "type": "fluentbit"
             }
         }
     ],
