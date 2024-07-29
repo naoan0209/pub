@@ -22,7 +22,15 @@
             "image": "public.ecr.aws/aws-observability/aws-for-fluent-bit:init-arm64-2.32.2.20240627",
             "cpu": 0,
             "memoryReservation": 50,
-            "portMappings": [],
+            "portMappings": [
+                {
+                    "name": "firelens-health",
+                    "containerPort": 2020,
+                    "hostPort": 2020,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
             "essential": true,
             "environment": [
                 {
@@ -75,6 +83,16 @@
                 },
                 "secretOptions": []
             },
+            "healthCheck": {
+                "command": [
+                    "CMD-SHELL",
+                    "curl -f http://127.0.0.1:2020/api/v1/health || exit 1"
+                ],
+                "interval": 10,
+                "timeout": 5,
+                "retries": 3,
+                "startPeriod": 30
+            },
             "systemControls": [],
             "firelensConfiguration": {
                 "type": "fluentbit"
@@ -87,8 +105,8 @@
     "requiresCompatibilities": [
         "FARGATE"
     ],
-    "cpu": "256",
-    "memory": "512",
+    "cpu": "1024",
+    "memory": "2048",
     "runtimePlatform": {
         "cpuArchitecture": "ARM64",
         "operatingSystemFamily": "LINUX"
