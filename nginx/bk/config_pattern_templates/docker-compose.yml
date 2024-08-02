@@ -1,0 +1,22 @@
+# docker-compose.yml
+services:
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+      - "8082:8082"
+    volumes:
+      # - ./html:/usr/share/nginx/html
+      - ./conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./templates/port_8080.conf.template:/etc/nginx/templates/port_8080.conf.template
+      - ./templates/port_8081.conf.template:/etc/nginx/templates/port_8081.conf.template
+      - ./templates/port_8082.conf.template:/etc/nginx/templates/port_8082.conf.template
+    environment:
+      # バックエンドALBのホスト名を指定
+      - ALB_HOSTNAME=52.69.151.178
+      # バックエンドにリクエストする際のプロトコルを指定
+      - PROTOCOL=http
