@@ -2,6 +2,7 @@
 # ----------------------------------------------
 # Amazon Linux 2023用 Docker&Composeインストール
 # ----------------------------------------------
+set -e
 
 # Dockerインストール
 sudo dnf update
@@ -11,7 +12,7 @@ sudo dnf install -y docker
 sudo systemctl start docker
 
 # sudo不要化
-sudo usermod -aG docker $$(whoami)
+sudo usermod -aG docker $(whoami)
 
 # サービス設定
 sudo service docker restart
